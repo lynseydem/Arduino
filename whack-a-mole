@@ -1,0 +1,166 @@
+#include <LiquidCrystal.h>
+
+// initialize the library by associating any needed LCD interface pin
+// with the arduino pin number it is connected to
+const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
+
+const int button0 = 0;
+
+const int button1 = 1;
+
+const int button6 = 6;
+
+const int button13 = 13;
+int count = 0;
+const int LED7 = 7;
+const int LED8 = 8;
+const int LED9 = 9;
+const int LED10 = 10;
+byte randomLED;
+bool needNewLED = false;
+int currentLED = 3;
+int currentButton = 0;
+
+int buttonState = 0;
+
+int score = 0;
+
+int counter = 0;
+
+bool started = false;
+
+bool first = true;
+
+
+void setup() {
+
+  // set up the LCD's number of columns and rows:
+  lcd.begin(16, 2);
+
+
+  pinMode(button0, INPUT);
+  pinMode(button1, INPUT);
+  pinMode(button6, INPUT);
+  pinMode(button13, INPUT);
+  pinMode(LED7, OUTPUT);
+  pinMode(LED8, OUTPUT);
+  pinMode(LED9, OUTPUT);
+  pinMode(LED10, OUTPUT);
+// Print a message to the LCD.
+  lcd.clear();
+  lcd.print("Whack a mole!");
+  lcd.setCursor(0,1);
+  String start = "Press any button to start";
+  //lcd.write(start[0]);
+
+  for (int j = 0; j <= 9; j++){
+    for (int i = 0; i <= 15+j; i++){
+      if (i + j == 0){
+        lcd.print(start);
+        delay(1000);
+      }
+      else{
+      lcd.write(start[i+j]);
+
+      }
+  }
+  delay(200);
+  lcd.setCursor(0,1);
+
+  }
+   delay(3000);
+}
+
+void loop() {
+  if (!started){
+      if(!first){
+    lcd.clear();
+    lcd.print("Whack a mole!");
+    lcd.setCursor(0,1);
+    String start = "Press any button to start";
+
+
+    for (int j = 0; j <= 9; j++){
+      for (int i = 0; i <= 15+j; i++){
+        if (i + j == 0){
+          lcd.print(start);
+          delay(1000);
+        }
+        else{
+        lcd.write(start[i+j]);
+        }
+    }
+    delay(200);
+    lcd.setCursor(0,1);
+    }
+    }
+    while(!started){
+  //if (digitalRead(0) == HIGH){
+  if (digitalRead(0) == HIGH | digitalRead(1) == HIGH | digitalRead(6) == HIGH | digitalRead(13) == HIGH){
+   started = true;
+   delay(3000);
+  }
+    }
+  }
+
+  if (started){
+  counter++;
+
+  randomLED = rand()%4;
+  //randomLED = 0;
+
+  if(randomLED == 0){
+    currentLED = 7;
+    currentButton = 0;
+
+  }
+  if(randomLED == 1){
+    currentLED = 8;
+    currentButton = 1;
+  }
+  if(randomLED == 2){
+    currentLED = 9;
+    currentButton = 6;
+
+  }
+  if(randomLED == 3){
+    currentLED = 10;
+    currentButton = 13;
+  }
+
+long var = 40000;
+
+while(var > 0){
+   buttonState = digitalRead(currentButton);
+   digitalWrite(currentLED, HIGH);
+
+   if (buttonState == HIGH)  {
+      digitalWrite(currentLED, LOW);
+      score++;
+      break;
+  }
+  var--;
+
+}
+
+  digitalWrite(currentLED,LOW);
+  delay(1000);
+
+  if(counter == 10){
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Game Over!");
+    lcd.setCursor(0, 1);
+    lcd.print("Score: " );
+    lcd.print(score);
+    lcd.print("/10");
+    counter = 0;
+    score = 0;
+    delay(5000);
+    started = false;
+    first = false;
+  }
+
+  }
+  }
